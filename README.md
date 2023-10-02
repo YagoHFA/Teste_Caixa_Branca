@@ -1,4 +1,4 @@
-# Analise de Estrutura do Código
+# Analise Fluxo de Grafo
 
 
     import java.sql.Connection;
@@ -8,143 +8,123 @@
 
 
         public class User {
-        public Connection conectarDB(){
-        Connection conn = null;
-        try{
-        Class.forName("com.mysql.Driver.Manager").newInstance();
-        String url = "jdbc:mysql://127.0.0.1/test?user=lopes&password=123";
-        conn = DriverManager.getConnection(url);
+        4 - public Connection conectarDB(){
+        5 - Connection conn = null;
+        6 - try{
+        7 - Class.forName("com.mysql.Driver.Manager").newInstance();
+        7 - tring url = "jdbc:mysql://127.0.0.1/test?user=lopes&password=123";
+        7 - conn = DriverManager.getConnection(url);
+        }8 
+    
+            9 - catch (Exception e){} 10
+            11 - return conn;
         }
+
+        
+        1 - public String nome = "";
+        1 - public boolean result = false;
+        
+
+        
+       2 -  public boolean VerificarUsuario(String login, String senha){
+            3 - String sql = "";
+            3 - Connection conn = conectarDB();
     
-            catch (Exception e){}
-            return conn;
-        }
-        public String nome = "";
-        public boolean result = false;
-        public boolean VerificarUsuario(String login, String senha){
-            String sql = "";
-            Connection conn = conectarDB();
+           12 - sql += "select nome from usuarios ";
+           12 - sql += "where login = " + "'" + login + "'";
+           12 - sql += " and senha = " + "'" + senha + "';";
+            13- try{
+                14 - Statement st = conn.createStatement();
+                14 - ResultSet rs = st.executeQuery(sql);
+                15 - if(rs.next()){
+                    16 - result  = true;
+                    16 - nome = rs.getString("nome");
+                }17
     
-            sql += "select nome from usuarios ";
-            sql += "where login = " + "'" + login + "'";
-            sql += " and senha = " + "'" + senha + "';";
-            try{
-                Statement st = conn.createStatement();
-                ResultSet rs = st.executeQuery(sql);
-                if(rs.next()){
-                    result  = true;
-                    nome = rs.getString("nome");
-                }
+            } 18
+            19 - catch (Exception e){
     
-            }
-            catch (Exception e){
-    
-            }
-            return  result;
+            }20 
+            21 - return  result;
         }
     
     }     
-
-## Primieiro Apontamento
-
-<p>
-    O Código em si está contido em apenas uma calsse que realiza
-    diversas operações como criar a conexão com o Banco de dados
-    e realizando e a busca no banco de dados.
-</p>
-<p>
-    Isso está a quebrar alguns padrões e boas práticas, uma classe
-    deve ser responsavel apenas por uma unica função, ou seja 
-    este código poderia ser dividido em dois, um com resposabilidade
-    de se conectar com o banco de dados e outro por realizar operações no banco dedados.
-</p>
-
-## Segundo Apontamento
-<p>
-    Ainda seguindo padrões de projeto, normalmente se cria ‘interfaces’ para que
-    classes dependentes possam implementar os seus metodos, seguindo os 'Contratos'
-    dito pelas ‘interfaces’, assim criando um padrão que todas devem seguir.
-</p>
-<p>
-    Seguindo essas regras é possivel criar, por exemplo, mais de uma classe
-    conectora pro Banco de Dados, conectando a Bancos diferentes, mas como todos têm as suas arquiteturas iguais
-    ao ‘interface’, pode-se utilizar a ‘interface’ na referência de metodo, por exemplo, com aplicação decidindo 
-    qual classe deve ser aplicada.
-</p>
-
-## Terceiro Apontamento 
-<p>
-    Como vistono código, ele tem a possibilidade de ter algum
-    valor nulo passando, por exemplo:
-</p>
-
-        Connection conn = null;
-        try{
-        Class.forName("com.mysql.Driver.Manager").newInstance();
-        String url = "jdbc:mysql://127.0.0.1/test?user=lopes&password=123";
-        conn = DriverManager.getConnection(url);
-        }
-    
-            catch (Exception e){}
-            return conn;
+## O fluxo
 
 <p>
-    Como Visto, ele inicia uma variavel conn para conectar com o banco de dados,
-    atribuindo o valor null a ela, em seguida começa um try-catch para realizar a conexão,
-    caso a conexão tenha algum problema, a Exception não realizara nenhuma ação, nesse caso
-    não tratando a exceção ocorrida, se o programa der continuidade o return acabará enviando 
-    uma variavel conn de valor nulo.
-</p>
+    Este bloco de código tem o objetivo de validar 
+    se um usuario existe no banco de dados, se sim retornar o seu nome
+    ele passa pela criação da conexão, em seguida retona se a conexão foi feita com sucesso
+    em seguida se a conexão for estabelecida ele verifica a existencia do usuario   
+    e retorna o nome.
+</p> 
 
-## Quarto Apontamento
+## O Grafo de Fluxo
+<p> Temos o fluxo do código em forma de grafo a seguir</p>
+<img src="img/Fluxo-grafo.PNG">
+
+## Complexidade Ciclomática 
+<p> 
+    A complexidade ciclomática é calculda com base 
+    na quantidade de arestas e nós, com a seguinte expressão
+    aresta - nó + 2 = x.
+</p>
 <p>
-    De acordo com as boas práticas de programação, vê-se a utilidade de comentar 
-    um código para explicar algumas partes onde o código em si não é totalmente 
-    legivel, alguns exemplos:
+    Com base nela, temos uma noção de quantos caminhos um grafo
+    pode seguir.
 </p>
-
-    Class.forName("com.mysql.Driver.Manager").newInstance();
-
 <p>
-    Está parte do código não é muito legivel para alguem que não 
-    está acostumado ou tenha pouca vivência em abiente java, para 
-    aqueles que possam usar este código, seja para melhorias, manuntenção 
-    ou para transformação de ferramentas, consiga entender o que essa linha 
-    significa para o programa e assim conseguir realizar o seu trabalho de forma
-    mais eficiênte.
+    Contando com esse grafo de 23 arestas e 21 nós
+    temos o seguinte resultado:
 </p>
-
-## Quinto Apontamento
 <p>
-    Olhando para a parte de conexão do código, é possivel ver que a conexão 
-    com o banco de dados em nenhum momento é fechada
+    23 - 21 + 2 = 4.
+</p>
+<p>
+    Ou seja para esse grafo temos 4 caminhos possiveis. 
 </p>
 
-    public Connection conectarDB(){
-        Connection conn = null;
-        try{
-        Class.forName("com.mysql.Driver.Manager").newInstance();
-        String url = "jdbc:mysql://127.0.0.1/test?user=lopes&password=123";
-        conn = DriverManager.getConnection(url);
-        }
-    
-            catch (Exception e){}
-            return conn;
-        }
+## Caminhos
+<p>
+    Com base na complexidade sabemos que o grafo nos 
+    apresenta 4 caminhos indenpendentes que são eles:
+</p>
 
 <p>
-    Isso significa que sempre que uma conexão é estabelecida,
-    não é fechada com o banco de dados ainda aberto, assim de certa forma  
-    o banco de dados pode ficar vunerável a alguns tipo de ataques.
+    Caminho 1:
 </p>
-
-## Sexto Apontamento
 <p>
-    Seguindo a legebilidade do código, vendo de certa pesperctiva, 
-    é dificil dizer o que essa classe deveia fazer, ela é uma abstração
-    de usuario para o código, se era para uma calsse que cria a conexão com o banco
-    ou se era a classe resposavel por realizar as operações de usuario com o banco.
+    1-2-3-4-5-6-9-10-11-12-13-20-21.
 </p>
-
-
-
+<p>
+    Este caminho se baseia caso uma exception ocorra na conexão.
+</p>
+<p>
+    Caminho 2:
+</p>
+<p>
+    1-2-3-4-5-6-7-8-11-12-13-14-18-21.
+</p>
+<p>
+    Este caminho se baseia caso a busca do usuario não retorne
+    nada, ou seja, usuario não encontrado.
+</p>
+<p>
+    Caminho 3:
+</p>
+<p>
+    Este caminho se baseia caso o usuario seja encontrado.
+</p>
+<p>
+    1-2-3-4-5-6-7-8-11-12-13-14-15-16-17-18-21.
+</p>
+<p>
+    Caminho 4:
+</p>
+<p>
+    1-2-3-4-5-6-7-8-11-12-13-18-20-21.
+</p>
+<p>
+    Este caminho se baseia numa exception que possa ocorrer 
+    que possa ocorrer durante a busca do usuario no banco.
+</p>
